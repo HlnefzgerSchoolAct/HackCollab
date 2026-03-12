@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+/*
+ * ==========================================================================
+ * Hack Club Theme → Tailwind CSS Integration
+ * ==========================================================================
+ * Source of truth: https://github.com/hackclub/theme (packages/theme/src/index.ts)
+ *
+ * Strategy: Extract all design tokens from @hackclub/theme as CSS custom
+ * properties. Tailwind v4 consumes them via @theme. This avoids importing
+ * Theme UI as a runtime dependency while keeping pixel-perfect alignment
+ * with Hack Club's official design system.
+ *
+ * Dark mode: Uses class strategy (html.dark) matching the Hack Club theme's
+ * `modes.dark` color set. Toggled via ThemeProvider.
+ * ==========================================================================
+ */
+
+/* --------------------------------------------------------------------------
+ * Phantom Sans — Hack Club's brand typeface
+ * Self-hosted for performance + privacy (no Google Fonts dependency).
+ * Download from: https://github.com/hackclub/theme or Hack Club assets.
+ * If you don't have the font files, the system-ui fallback stack is used
+ * (which is what Hack Club's theme specifies as fallback).
+ * -------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Phantom Sans";
+  src:
+    url("/fonts/PhantomSans-Regular.woff2") format("woff2"),
+    url("/fonts/PhantomSans-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Phantom Sans";
+  src:
+    url("/fonts/PhantomSans-Bold.woff2") format("woff2"),
+    url("/fonts/PhantomSans-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --------------------------------------------------------------------------
+ * CSS Custom Properties — Hack Club color palette
+ * These are the canonical values from @hackclub/theme.
+ * -------------------------------------------------------------------------- */
+
+:root {
+  /* Core palette (constant across modes) */
+  --hc-darker: #121217;
+  --hc-dark: #17171d;
+  --hc-darkless: #252429;
+  --hc-black: #1f2d3d;
+  --hc-steel: #273444;
+  --hc-slate: #3c4858;
+  --hc-muted: #8492a6;
+  --hc-smoke: #e0e6ed;
+  --hc-snow: #f9fafc;
+  --hc-white: #ffffff;
+
+  /* Brand colors */
+  --hc-red: #ec3750;
+  --hc-orange: #ff8c37;
+  --hc-yellow: #f1c40f;
+  --hc-green: #33d6a6;
+  --hc-cyan: #5bc0de;
+  --hc-blue: #338eda;
+  --hc-purple: #a633d6;
+
+  /* Semantic colors — light mode (default) */
+  --hc-text: var(--hc-black);
+  --hc-background: var(--hc-white);
+  --hc-elevated: var(--hc-white);
+  --hc-sheet: var(--hc-snow);
+  --hc-sunken: var(--hc-smoke);
+  --hc-border: var(--hc-smoke);
+  --hc-placeholder: var(--hc-muted);
+  --hc-secondary: var(--hc-slate);
+  --hc-primary: var(--hc-red);
+  --hc-accent: var(--hc-blue);
+
+  /* Shadows — from @hackclub/theme */
+  --hc-shadow-text: 0 1px 2px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.125);
+  --hc-shadow-small: 0 1px 2px rgba(0, 0, 0, 0.0625), 0 2px 4px rgba(0, 0, 0, 0.0625);
+  --hc-shadow-card: 0 4px 8px rgba(0, 0, 0, 0.125);
+  --hc-shadow-elevated: 0 1px 2px rgba(0, 0, 0, 0.0625), 0 8px 12px rgba(0, 0, 0, 0.125);
+}
+
+/* Dark mode semantic overrides — from @hackclub/theme modes.dark */
+.dark {
+  --hc-text: var(--hc-white);
+  --hc-background: var(--hc-dark);
+  --hc-elevated: var(--hc-darkless);
+  --hc-sheet: var(--hc-darkless);
+  --hc-sunken: var(--hc-darker);
+  --hc-border: var(--hc-darkless);
+  --hc-placeholder: var(--hc-slate);
+  --hc-secondary: var(--hc-muted);
+  --hc-accent: var(--hc-cyan);
+}
+
+/* --------------------------------------------------------------------------
+ * Tailwind v4 Theme Configuration
+ * Maps Hack Club tokens into Tailwind's design system so you can use
+ * classes like `bg-primary`, `text-secondary`, `shadow-card`, etc.
+ * -------------------------------------------------------------------------- */
+
+@theme {
+  /* Colors — semantic */
+  --color-background: var(--hc-background);
+  --color-foreground: var(--hc-text);
+  --color-primary: var(--hc-primary);
+  --color-primary-foreground: var(--hc-white);
+  --color-secondary: var(--hc-secondary);
+  --color-secondary-foreground: var(--hc-white);
+  --color-accent: var(--hc-accent);
+  --color-accent-foreground: var(--hc-white);
+  --color-muted: var(--hc-muted);
+  --color-muted-foreground: var(--hc-slate);
+  --color-elevated: var(--hc-elevated);
+  --color-sheet: var(--hc-sheet);
+  --color-sunken: var(--hc-sunken);
+  --color-border: var(--hc-border);
+  --color-placeholder: var(--hc-placeholder);
+  --color-destructive: var(--hc-red);
+  --color-destructive-foreground: var(--hc-white);
+  --color-success: var(--hc-green);
+  --color-warning: var(--hc-orange);
+  --color-info: var(--hc-cyan);
+
+  /* Colors — palette (direct access) */
+  --color-hc-darker: var(--hc-darker);
+  --color-hc-dark: var(--hc-dark);
+  --color-hc-darkless: var(--hc-darkless);
+  --color-hc-black: var(--hc-black);
+  --color-hc-steel: var(--hc-steel);
+  --color-hc-slate: var(--hc-slate);
+  --color-hc-muted: var(--hc-muted);
+  --color-hc-smoke: var(--hc-smoke);
+  --color-hc-snow: var(--hc-snow);
+  --color-hc-white: var(--hc-white);
+  --color-hc-red: var(--hc-red);
+  --color-hc-orange: var(--hc-orange);
+  --color-hc-yellow: var(--hc-yellow);
+  --color-hc-green: var(--hc-green);
+  --color-hc-cyan: var(--hc-cyan);
+  --color-hc-blue: var(--hc-blue);
+  --color-hc-purple: var(--hc-purple);
+
+  /* Typography — from @hackclub/theme fonts */
+  --font-sans: "Phantom Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  /* Font sizes — using Tailwind defaults.
+   * HC theme's fontSizes scale (12, 16, 20, 24, 32, 48, 64...) is designed
+   * for Theme UI's array indexing, not Tailwind's named sizes. Tailwind's
+   * built-in text-sm/base/lg/xl scale is used instead for consistency. */
+
+  /* Line heights — from @hackclub/theme lineHeights */
+  --leading-limit: 0.875;
+  --leading-title: 1;
+  --leading-heading: 1.125;
+  --leading-subheading: 1.25;
+  --leading-caption: 1.375;
+  --leading-body: 1.5;
+
+  /* Spacing — using Tailwind defaults (0.25rem base multiplier).
+   * HC theme's power-of-2 space scale (0, 4, 8, 16, 32, 64, 128, 256, 512)
+   * maps to Theme UI's `p={3}` style. It's incompatible with Tailwind's
+   * naming convention where `p-4` should be 1rem, not 32px. */
+
+  /* Radii — from @hackclub/theme radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 99999px;
+
+  /* Shadows — from @hackclub/theme shadows */
+  --shadow-sm: var(--hc-shadow-small);
+  --shadow-md: var(--hc-shadow-card);
+  --shadow-lg: var(--hc-shadow-elevated);
+
+  /* Container widths — from @hackclub/theme sizes */
+  --breakpoint-sm: 32em;
+  --breakpoint-md: 48em;
+  --breakpoint-lg: 64em;
+  --breakpoint-xl: 96em;
+  --breakpoint-2xl: 128em;
+}
+
+/* --------------------------------------------------------------------------
+ * Base styles
+ * -------------------------------------------------------------------------- */
+
+body {
+  color: var(--hc-text);
+  background-color: var(--hc-background);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus ring — accessible, Hack Club branded */
+*:focus-visible {
+  outline: 2px solid var(--hc-accent);
+  outline-offset: 2px;
+}

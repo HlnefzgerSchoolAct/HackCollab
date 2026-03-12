@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+/**
+ * OAuth callback handler for Hack Club OIDC.
+ *
+ * Flow:
+ * 1. User clicks "Sign in with Hack Club"
+ * 2. Supabase redirects to Hack Club's OIDC authorize endpoint
+ * 3. User authenticates at Hack Club
+ * 4. Hack Club redirects back here with an auth code
+ * 5. We exchange the code for a session
+ * 6. Redirect to the originally requested page (or /dashboard)
+ */
+export async function GET(request: Request) {
+  const { searchParams, origin } = new URL(request.url);
+  const code = searchParams.get("code");
+  const next = searchParams.get("next") ?? "/dashboard";
+
+  if (code) {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error) {
+      // Successful auth — redirect to the intended destination
+      const forwardedHost = request.headers.get("x-forwarded-host");
+      const isLocalEnv = process.env.NODE_ENV === "development";
+
+      if (isLocalEnv) {
+        return NextResponse.redirect(`${origin}${next}`);
+      } else if (forwardedHost) {
+        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+      } else {
+        return NextResponse.redirect(`${origin}${next}`);
+      }
+    }
+  }
+
+  // Auth failed — redirect to error page
+  return NextResponse.redirect(`${origin}/auth/error`);
+}
