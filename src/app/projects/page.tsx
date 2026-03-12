@@ -51,8 +51,9 @@ export default function ProjectsPage() {
         {/* Project list */}
         {projects.length === 0 ? (
           <div className="rounded-lg bg-sunken p-12 text-center">
+            <p className="mb-1 font-bold text-foreground">No projects yet</p>
             <p className="text-secondary">
-              No projects yet. Be the first to{" "}
+              Project creation is coming soon. Be the first to{" "}
               <Link href="/projects/new" className="font-bold text-primary hover:underline">
                 create one
               </Link>

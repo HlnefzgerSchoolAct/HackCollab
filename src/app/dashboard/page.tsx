@@ -45,7 +45,8 @@ export default async function DashboardPage() {
               </Button>
             </div>
             <p className="text-sm text-secondary">
-              Projects you&apos;ve created will appear here.
+              Projects you&apos;ve created will appear here once project
+              creation is live.
             </p>
             {/* Project list populated from DB via server query */}
           </section>
@@ -59,7 +60,8 @@ export default async function DashboardPage() {
               </Button>
             </div>
             <p className="text-sm text-secondary">
-              Projects you&apos;ve joined will appear here.
+              Projects you&apos;ve joined will appear here once team
+              features are live.
             </p>
             {/* Membership list populated from DB via server query */}
           </section>
@@ -70,7 +72,8 @@ export default async function DashboardPage() {
               Pending Applications
             </h2>
             <p className="text-sm text-secondary">
-              Applications you&apos;ve submitted or received will appear here.
+              Applications you&apos;ve submitted or received will appear
+              here. This feature is coming soon.
             </p>
           </section>
         </div>

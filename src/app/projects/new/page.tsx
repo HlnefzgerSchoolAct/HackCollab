@@ -106,6 +106,12 @@ export default async function NewProjectPage() {
         </div>
 
         {/* TODO: implement wizard state management + form submission via create_project() RPC */}
+        <div className="mt-6 rounded-lg border border-border bg-sunken p-4 text-center">
+          <p className="text-sm text-secondary">
+            Full project creation (steps 2–4 and submission) is coming
+            soon. Stay tuned!
+          </p>
+        </div>
       </main>
     </>
   );

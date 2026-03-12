@@ -53,7 +53,7 @@ export default async function ProfilePage() {
             </h2>
             <p className="text-sm text-secondary">
               Set your skills and weekly availability to get matched with
-              projects.
+              projects. This feature is coming soon.
             </p>
             {/* TODO: editable skills picker + availability selector */}
           </section>
@@ -63,6 +63,7 @@ export default async function ProfilePage() {
             <h2 className="mb-4 font-bold text-foreground">GitHub</h2>
             <p className="text-sm text-secondary">
               Link your GitHub account to show your repos and contributions.
+              This feature is coming soon.
             </p>
             {/* TODO: GitHub OAuth link flow */}
           </section>
@@ -71,7 +72,8 @@ export default async function ProfilePage() {
           <section className="rounded-lg bg-elevated p-6 shadow-md md:col-span-2">
             <h2 className="mb-4 font-bold text-foreground">Project History</h2>
             <p className="text-sm text-secondary">
-              Your completed and active projects will appear here.
+              Your completed and active projects will appear here once
+              project features are live.
             </p>
             {/* TODO: fetch from members + projects tables */}
           </section>

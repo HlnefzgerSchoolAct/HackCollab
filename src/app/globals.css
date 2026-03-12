@@ -24,25 +24,12 @@
  * (which is what Hack Club's theme specifies as fallback).
  * -------------------------------------------------------------------------- */
 
-@font-face {
-  font-family: "Phantom Sans";
-  src:
-    url("/fonts/PhantomSans-Regular.woff2") format("woff2"),
-    url("/fonts/PhantomSans-Regular.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Phantom Sans";
-  src:
-    url("/fonts/PhantomSans-Bold.woff2") format("woff2"),
-    url("/fonts/PhantomSans-Bold.woff") format("woff");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/*
+ * @font-face declarations removed — Phantom Sans font files are not bundled.
+ * The font-sans stack in Tailwind uses system-ui as fallback, which is the
+ * same fallback Hack Club's theme specifies. Re-enable these blocks after
+ * adding the .woff2/.woff files to public/fonts/.
+ */
 
 /* --------------------------------------------------------------------------
  * CSS Custom Properties — Hack Club color palette
