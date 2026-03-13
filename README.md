@@ -55,6 +55,17 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Vercel creates a unique URL for every push / pull request. The auth callback handler uses `x-forwarded-host` to redirect correctly on preview URLs — no extra config needed.
 
+### If Vercel Shows 404
+
+Check these project settings in Vercel:
+
+1. **Root Directory** is set to the repository root (where `package.json` lives).
+2. **Framework Preset** is **Next.js** (this repo also includes `vercel.json` to enforce this).
+3. **Build Command** is `next build` (or leave it empty to use Vercel defaults).
+4. **Output Directory** is **empty** (do not set `dist` for this app).
+
+If these are correct, trigger a fresh redeploy from the latest commit.
+
 ## Scripts
 
 | Command | Description |
