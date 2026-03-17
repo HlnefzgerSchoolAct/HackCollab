@@ -1,17 +1,36 @@
 "use client";
 
 import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useSearchParams } from "next/navigation";
 
 function LoginContent() {
+  const searchParams = useSearchParams();
 
-  function signInWithHackClub() {
-    const authUrl =
-      "https://auth.hackclub.com/oauth/authorize" +
-      "?client_id=ad4e25fbb7a3130a2131d2cd8911ffe9" +
-      "&redirect_uri=https%3A%2F%2Fxmkrjffjywoayeqsioui.supabase.co%2Fauth%2Fv1%2Fcallback" +
-      "&response_type=code" +
-      "&scope=openid+email+name+profile+verification_status+slack_id";
-    window.location.href = authUrl;
+  async function signInWithHackClub() {
+    const supabase = createClient();
+    const next = searchParams.get("next") ?? "/dashboard";
+    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+      console.log("[auth-debug] Starting OAuth sign-in", {
+        provider: "keycloak",
+        next,
+        redirectTo,
+      });
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "keycloak",
+      options: {
+        redirectTo,
+      },
+    });
+
+    if (error) {
+      console.error("[auth-debug] OAuth sign-in failed", error);
+      window.location.href = "/auth/error";
+    }
   }
 
   return (
