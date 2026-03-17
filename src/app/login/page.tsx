@@ -1,26 +1,17 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
-import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 function LoginContent() {
-  const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/dashboard";
 
-  async function signInWithHackClub() {
-    const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
-      provider: "keycloak",
-      options: {
-        // Supabase doesn't have a native "hackclub" provider, so we use
-        // the OIDC provider configured in Supabase dashboard as "keycloak"
-        // (or whichever alias maps to Hack Club's OIDC).
-        // The scopes request must align with Hack Club's OIDC capabilities.
-        scopes: "openid profile email",
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
-      },
-    });
+  function signInWithHackClub() {
+    const authUrl =
+      "https://auth.hackclub.com/oauth/authorize" +
+      "?client_id=ad4e25fbb7a3130a2131d2cd8911ffe9" +
+      "&redirect_uri=https%3A%2F%2Fxmkrjffjywoayeqsioui.supabase.co%2Fauth%2Fv1%2Fcallback" +
+      "&response_type=code" +
+      "&scope=openid+email+name+profile+verification_status+slack_id";
+    window.location.href = authUrl;
   }
 
   return (
