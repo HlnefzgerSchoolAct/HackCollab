@@ -4,19 +4,43 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
 
+/**
+ * Generate a cryptographic random state parameter for OAuth CSRF protection (T6).
+ * Uses Web Crypto API for secure randomness.
+ */
+function generateState(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  // Convert to URL-safe base64
+  return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+}
+
 function LoginContent() {
   const searchParams = useSearchParams();
 
   async function signInWithHackClub() {
     const supabase = createClient();
     const next = searchParams.get("next") ?? "/dashboard";
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+    
+    // Generate and store state parameter for CSRF protection (T6 - OAuth state fixation)
+    const state = generateState();
+    try {
+      sessionStorage.setItem("oauth_state", state);
+    } catch (err) {
+      console.error("[auth-error] Failed to store OAuth state", err);
+    }
+    
+    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}&state=${encodeURIComponent(state)}`;
 
     if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
       console.log("[auth-debug] Starting OAuth sign-in", {
         provider: "keycloak",
         next,
         redirectTo,
+        stateGenerated: true,
       });
     }
 
