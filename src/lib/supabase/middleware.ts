@@ -8,6 +8,7 @@ function requireEnv(name: string): string {
 }
 
 export async function updateSession(request: NextRequest) {
+  const debugAuth = process.env.NEXT_PUBLIC_DEBUG_AUTH === "true";
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -37,6 +38,13 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (debugAuth) {
+    console.log("[auth-debug] Middleware user check", {
+      path: request.nextUrl.pathname,
+      isAuthenticated: Boolean(user),
+    });
+  }
+
   // Protected routes: redirect unauthenticated users to /login
   const protectedPrefixes = ["/dashboard", "/projects/new", "/profile"];
   const isProtected = protectedPrefixes.some((prefix) =>
@@ -44,6 +52,11 @@ export async function updateSession(request: NextRequest) {
   );
 
   if (isProtected && !user) {
+    if (debugAuth) {
+      console.log("[auth-debug] Redirecting unauthenticated user to login", {
+        path: request.nextUrl.pathname,
+      });
+    }
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
@@ -51,6 +64,9 @@ export async function updateSession(request: NextRequest) {
 
   // Already authenticated users hitting /login → redirect to dashboard
   if (request.nextUrl.pathname === "/login" && user) {
+    if (debugAuth) {
+      console.log("[auth-debug] Redirecting authenticated user away from login");
+    }
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

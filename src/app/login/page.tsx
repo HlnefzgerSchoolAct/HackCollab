@@ -1,17 +1,60 @@
 "use client";
 
 import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useSearchParams } from "next/navigation";
+
+/**
+ * Generate a cryptographic random state parameter for OAuth CSRF protection (T6).
+ * Uses Web Crypto API for secure randomness.
+ */
+function generateState(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  // Convert to URL-safe base64
+  return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+}
 
 function LoginContent() {
+  const searchParams = useSearchParams();
 
-  function signInWithHackClub() {
-    const authUrl =
-      "https://auth.hackclub.com/oauth/authorize" +
-      "?client_id=ad4e25fbb7a3130a2131d2cd8911ffe9" +
-      "&redirect_uri=https%3A%2F%2Fxmkrjffjywoayeqsioui.supabase.co%2Fauth%2Fv1%2Fcallback" +
-      "&response_type=code" +
-      "&scope=openid+email+name+profile+verification_status+slack_id";
-    window.location.href = authUrl;
+  async function signInWithHackClub() {
+    const supabase = createClient();
+    const next = searchParams.get("next") ?? "/dashboard";
+    
+    // Generate and store state parameter for CSRF protection (T6 - OAuth state fixation)
+    const state = generateState();
+    try {
+      sessionStorage.setItem("oauth_state", state);
+    } catch (err) {
+      console.error("[auth-error] Failed to store OAuth state", err);
+    }
+    
+    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}&state=${encodeURIComponent(state)}`;
+
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+      console.log("[auth-debug] Starting OAuth sign-in", {
+        provider: "keycloak",
+        next,
+        redirectTo,
+        stateGenerated: true,
+      });
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "keycloak",
+      options: {
+        redirectTo,
+      },
+    });
+
+    if (error) {
+      console.error("[auth-debug] OAuth sign-in failed", error);
+      window.location.href = "/auth/error";
+    }
   }
 
   return (
